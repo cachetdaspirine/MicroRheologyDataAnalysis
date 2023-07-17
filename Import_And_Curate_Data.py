@@ -13,7 +13,7 @@ Usage:
 Arguments:
 
     <inputs>: One or more inputs, where each input can be either a filename 
-              (e.g., 'file1.txt') or a range of file numbers (e.g., '3-5').
+              (e.g., 'file1.txt') or a range of file numbers (e.g., '3:5').
 
 Example Usages:
 
