@@ -39,7 +39,7 @@ if __name__ == "__main__":
         system.compute_chi()
         print([system.freq,system.chi.real,system.chi.imag])
         chi_omega[n] = [system.freq,system.chi.real,system.chi.imag]
-
+    np.savetxt(chi_omega,"output.csv")
     #root = Tk()
     #root.mainloop()
 
