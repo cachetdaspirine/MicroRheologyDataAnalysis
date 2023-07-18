@@ -39,9 +39,6 @@ Notes:
       directory where you're running the script.
 
 """
-
-
-
 def process_files(filenames):
     list_of_data_frames = list()
     list_of_stiffness = list()
