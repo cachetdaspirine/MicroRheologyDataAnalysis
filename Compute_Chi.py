@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import RectangleSelector
 
 
+import ipywidgets as widgets
+from IPython.display import display
+
+
 fitting_function= lambda  t,F0,phi,freq,cst : F0*np.cos(2*np.pi*freq*t+phi)+cst
 
 class setup:
@@ -29,6 +33,7 @@ class setup:
         self.popt_1,self.popt_2 = None,None
         self.xlim=None
         self.ylim=None
+        self.make_fit()
     def make_fit(self):
         #self.get_frequencies()
         self.popt_1,pconv_1 = curve_fit(fitting_function,
@@ -39,12 +44,13 @@ class setup:
                                                                     self.data[self.column_names[2]],
                                                                     self.data[self.column_names[1]] 
                                                                     ,p0 = (np.sqrt(np.mean(self.data[self.column_names[1]].head(50)**2)),0.,self.freq,0))
+    def show_fit(self):
         fig,ax = plt.subplots()
         self.plot(fig,ax,Force2=False)
-        plt.show(block=True)
+        plt.show()
         fig,ax = plt.subplots()
         self.plot(fig,ax,Force1=False)
-        plt.show(block=True)
+        plt.show()
         #print(self.popt_1)
         #print(self.popt_2)
     def get_frequencies(self):
@@ -69,7 +75,7 @@ class setup:
         self.xlim =  (min(x1,x2),max(x1,x2))
         self.ylim = (min(y1,y2),max(y1,y2))
         #print(self.xlim,self.ylim)
-    def select_range(self):
+    def select_range(self,ShowResult=False):
         fig, ax = plt.subplots()
         self.plot(fig,ax,fit=False)
         xlim = ax.get_xlim()  # Store current xlim
@@ -82,7 +88,13 @@ class setup:
                        interactive=True)
         ax.set_xlim(xlim)  # Reset stored xlim
         ax.set_ylim(ylim)  # Reset stored ylim
-        plt.show(block=True)
+        plt.show()
+        try:
+            while fig.number in plt.get_fignums():
+                plt.pause(0.1)
+        except:
+            plt.close(fig.number)
+            raise
         # filter the datas
         #print(self.xlim)
         #print(self.ylim)
@@ -92,10 +104,10 @@ class setup:
                                                 (self.data[self.column_names[1]] <= self.ylim[1]) &
                                                 (self.data[self.column_names[2]] >= self.xlim[0]) &
                                                 (self.data[self.column_names[2]] <= self.xlim[1]) ]
-        fig,ax = plt.subplots()
-        self.plot(fig,ax,fit=False)
-        plt.show(block=True)
-
+        if ShowResult:
+            fig,ax = plt.subplots()
+            self.plot(fig,ax,fit=False)
+            plt.show()
     def plot(self,fig,ax,fit=True,Force1=True,Force2=True):
         if Force1:
             ax.plot(self.data[self.column_names[2]],self.data[self.column_names[0]],label='force1')
@@ -116,4 +128,5 @@ class setup:
             self.compute_chi_sys()
         omega = self.freq*2*np.pi
         self.chi = self.chi_sys * (4*self.k1x*self.k2x + 1j*self.xi+omega*(self.k1x+self.k2x))/(2*self.k1x*(2*self.k2x+1j*self.xi*omega) - 4*self.chi_sys * (self.k1x+self.k2x+1j*self.xi*omega))
-
+    def get_fitting_parameters(self):
+        return [self.freq,self.phase,self.amplitude]
